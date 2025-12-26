@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Convert Markdown file with Mermaid diagrams to PDF
-Uses alternative methods since WeasyPrint has dependencies issues on Windows
+Convert Markdown file with Mermaid diagrams to HTML
+Uses Mermaid.js to render diagrams directly in the browser
 """
 
 import re
@@ -15,308 +15,100 @@ def extract_mermaid_blocks(content):
     matches = re.findall(pattern, content, re.DOTALL)
     return matches
 
-def create_printable_html(md_content):
-    """Create a printable HTML version of the Markdown content"""
-    # Extract mermaid blocks for reference
+def create_html_with_mermaid(md_content):
+    """Create HTML with embedded Mermaid.js for diagram rendering"""
+    # Extract mermaid blocks
     mermaid_blocks = extract_mermaid_blocks(md_content)
     
-    # Replace mermaid blocks with formatted text representations
+    # Replace mermaid blocks with placeholders
     clean_md = md_content
     for i, block in enumerate(mermaid_blocks):
-        # Create a readable representation of the mermaid diagram
-        diagram_info = f"\n\n**Mermaid Diagram {i+1}:**\n\n```\n{block}\n```\n\n*Note: This is the Mermaid code. Copy it to a Mermaid renderer to visualize.*\n\n"
-        # Replace the mermaid block
+        placeholder = f"\n\n<div class=\"mermaid\">{block}</div>\n\n"
         pattern = r'```mermaid\s*\n.*?\n```'
-        clean_md = re.sub(pattern, diagram_info, clean_md, 1)
+        clean_md = re.sub(pattern, placeholder, clean_md, 1)
     
     # Convert to HTML
     html_content = markdown(clean_md, extensions=['extra', 'codehilite', 'tables'])
     
-    # Create styled HTML
-    styled_html = f"""
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>Rate Limiter Documentation</title>
-        <style>
-            @media print {{
-                body {{
-                    font-family: Arial, sans-serif;
-                    line-height: 1.5;
-                    color: #000;
-                    margin: 0.5in;
-                    font-size: 11pt;
-                }}
-                h1 {{
-                    font-size: 20pt;
-                    color: #0066cc;
-                    border-bottom: 2px solid #0066cc;
-                    padding-bottom: 5px;
-                    margin-bottom: 15px;
-                }}
-                h2 {{
-                    font-size: 16pt;
-                    color: #0066cc;
-                    margin-top: 20px;
-                    margin-bottom: 10px;
-                    border-bottom: 1px solid #ccc;
-                    padding-bottom: 3px;
-                }}
-                h3 {{
-                    font-size: 14pt;
-                    color: #333;
-                    margin-top: 15px;
-                    margin-bottom: 8px;
-                }}
-                code {{
-                    background: #f5f5f5;
-                    padding: 2px 4px;
-                    border-radius: 3px;
-                    font-family: 'Courier New', monospace;
-                    font-size: 10pt;
-                }}
-                pre {{
-                    background: #f5f5f5;
-                    padding: 10px;
-                    border-radius: 4px;
-                    border-left: 3px solid #0066cc;
-                    overflow-x: auto;
-                    page-break-inside: avoid;
-                }}
-                blockquote {{
-                    border-left: 4px solid #0066cc;
-                    padding-left: 15px;
-                    margin: 12px 0;
-                    color: #555;
-                    background: #f9f9f9;
-                    font-style: italic;
-                }}
-                table {{
-                    border-collapse: collapse;
-                    width: 100%;
-                    margin: 12px 0;
-                    page-break-inside: avoid;
-                }}
-                th, td {{
-                    border: 1px solid #ddd;
-                    padding: 6px;
-                    text-align: left;
-                    font-size: 10pt;
-                }}
-                th {{
-                    background-color: #0066cc;
-                    color: white;
-                    font-weight: bold;
-                }}
-                tr:nth-child(even) {{
-                    background-color: #f9f9f9;
-                }}
-                ul, ol {{
-                    margin-left: 20px;
-                    margin-top: 8px;
-                    margin-bottom: 8px;
-                }}
-                li {{
-                    margin-bottom: 4px;
-                }}
-                a {{
-                    color: #0066cc;
-                    text-decoration: none;
-                }}
-                .mermaid-code {{
-                    background: #f0f8ff;
-                    border: 1px dashed #0066cc;
-                    padding: 12px;
-                    margin: 12px 0;
-                    border-radius: 4px;
-                    page-break-inside: avoid;
-                }}
-                .mermaid-code strong {{
-                    color: #0066cc;
-                    display: block;
-                    margin-bottom: 8px;
-                }}
-                .mermaid-code pre {{
-                    background: white;
-                    border: none;
-                    margin: 0;
-                    padding: 0;
-                    font-size: 9pt;
-                }}
-                .mermaid-code em {{
-                    color: #666;
-                    font-size: 9pt;
-                    display: block;
-                    margin-top: 8px;
-                }}
-                hr {{
-                    border: none;
-                    border-top: 1px solid #ccc;
-                    margin: 20px 0;
-                }}
-                .header {{
-                    text-align: center;
-                    margin-bottom: 30px;
-                    padding-bottom: 15px;
-                    border-bottom: 2px solid #0066cc;
-                }}
-                .footer {{
-                    text-align: center;
-                    font-size: 9pt;
-                    color: #666;
-                    margin-top: 30px;
-                    padding-top: 10px;
-                    border-top: 1px solid #ccc;
-                }}
-            }}
-            
-            /* Screen display styles */
-            body {{
-                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                line-height: 1.6;
-                color: #333;
-                max-width: 800px;
-                margin: 0 auto;
-                padding: 20px;
-            }}
-            h1, h2, h3, h4, h5, h6 {{
-                color: #2c3e50;
-                margin-top: 1.5em;
-                margin-bottom: 0.5em;
-            }}
-            h1 {{ border-bottom: 2px solid #3498db; padding-bottom: 10px; }}
-            h2 {{ border-bottom: 1px solid #bdc3c7; padding-bottom: 5px; }}
-            code {{
-                background: #f8f9fa;
-                padding: 2px 6px;
-                border-radius: 3px;
-                font-family: 'Courier New', monospace;
-            }}
-            pre {{
-                background: #f8f9fa;
-                padding: 15px;
-                border-radius: 5px;
-                border-left: 4px solid #3498db;
-                overflow-x: auto;
-            }}
-            blockquote {{
-                border-left: 4px solid #3498db;
-                padding-left: 15px;
-                margin: 15px 0;
-                color: #555;
-                background: #f8f9fa;
-            }}
-            table {{
-                border-collapse: collapse;
-                width: 100%;
-                margin: 15px 0;
-            }}
-            th, td {{
-                border: 1px solid #ddd;
-                padding: 8px;
-                text-align: left;
-            }}
-            th {{
-                background-color: #3498db;
-                color: white;
-            }}
-            tr:nth-child(even) {{
-                background-color: #f2f2f2;
-            }}
-            .mermaid-code {{
-                background: #e8f4f8;
-                border: 2px dashed #3498db;
-                padding: 15px;
-                margin: 15px 0;
-                border-radius: 5px;
-            }}
-            .mermaid-code strong {{
-                color: #3498db;
-                display: block;
-                margin-bottom: 8px;
-            }}
-            .mermaid-code em {{
-                color: #666;
-                font-size: 0.9em;
-                display: block;
-                margin-top: 8px;
-            }}
-            hr {{
-                border: none;
-                border-top: 1px solid #bdc3c7;
-                margin: 20px 0;
-            }}
-            ul, ol {{
-                margin-left: 20px;
-            }}
-            a {{
-                color: #3498db;
-                text-decoration: none;
-            }}
-            a:hover {{
-                text-decoration: underline;
-            }}
-            .header {{
-                text-align: center;
-                margin-bottom: 30px;
-                padding-bottom: 15px;
-                border-bottom: 2px solid #3498db;
-            }}
-            .footer {{
-                text-align: center;
-                font-size: 0.9em;
-                color: #666;
-                margin-top: 30px;
-                padding-top: 10px;
-                border-top: 1px solid #bdc3c7;
-            }}
-        </style>
-    </head>
-    <body>
-        <div class="header">
-            <h1>Rate Limiter Documentation</h1>
-            <p style="color: #666; margin: 0;">Generated from Rate Limiter.md</p>
-        </div>
-        
-        {html_content}
-        
-        <div class="footer">
-            <p>Generated on: {Path('Rate Limiter.md').stat().st_mtime if Path('Rate Limiter.md').exists() else 'N/A'}</p>
-            <p>{len(mermaid_blocks)} Mermaid diagram(s) included as code blocks</p>
-            <p>For visualization, copy Mermaid code to: https://mermaid.live/</p>
-        </div>
-    </body>
-    </html>
-    """
+    # Build the complete HTML in parts to avoid f-string issues
+    html_parts = []
+    html_parts.append('<!DOCTYPE html>')
+    html_parts.append('<html>')
+    html_parts.append('<head>')
+    html_parts.append('<meta charset="UTF-8">')
+    html_parts.append('<title>Rate Limiter Documentation</title>')
+    html_parts.append('<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>')
+    html_parts.append('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">')
+    html_parts.append('<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>')
+    html_parts.append('<style>')
+    html_parts.append('body {font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 900px; margin: 0 auto; padding: 20px; background: #ffffff;}')
+    html_parts.append('h1 {font-size: 2.2em; border-bottom: 3px solid #3498db; padding-bottom: 10px; margin-bottom: 20px; color: #2c3e50;}')
+    html_parts.append('h2 {font-size: 1.6em; border-bottom: 1px solid #bdc3c7; padding-bottom: 5px; margin-top: 25px; color: #2c3e50;}')
+    html_parts.append('h3 {font-size: 1.3em; color: #34495e; margin-top: 20px;}')
+    html_parts.append('p {margin: 12px 0;}')
+    html_parts.append('code {background: #f8f9fa; padding: 2px 6px; border-radius: 3px; font-family: "Courier New", monospace; font-size: 0.95em; color: #c7254e;}')
+    html_parts.append('pre {background: #f8f9fa; padding: 15px; border-radius: 5px; border-left: 4px solid #3498db; overflow-x: auto; margin: 15px 0;}')
+    html_parts.append('blockquote {border-left: 4px solid #3498db; padding-left: 15px; margin: 15px 0; color: #555; background: #f8f9fa; font-style: italic;}')
+    html_parts.append('table {border-collapse: collapse; width: 100%; margin: 15px 0;}')
+    html_parts.append('th, td {border: 1px solid #ddd; padding: 10px; text-align: left;}')
+    html_parts.append('th {background-color: #3498db; color: white; font-weight: bold;}')
+    html_parts.append('tr:nth-child(even) {background-color: #f9f9f9;}')
+    html_parts.append('ul, ol {margin-left: 25px; margin-top: 10px; margin-bottom: 10px;}')
+    html_parts.append('li {margin-bottom: 6px;}')
+    html_parts.append('a {color: #3498db; text-decoration: none;}')
+    html_parts.append('a:hover {text-decoration: underline;}')
+    html_parts.append('.mermaid {margin: 25px 0; padding: 20px; background: #f8f9fa; border: 2px solid #3498db; border-radius: 8px; text-align: center;}')
+    html_parts.append('.header {text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 3px solid #3498db;}')
+    html_parts.append('.footer {text-align: center; font-size: 0.85em; color: #666; margin-top: 40px; padding-top: 20px; border-top: 1px solid #bdc3c7;}')
+    html_parts.append('@media print {')
+    html_parts.append('body {font-family: Arial, sans-serif; line-height: 1.5; color: #000; margin: 0.5in; font-size: 11pt; max-width: 100%;}')
+    html_parts.append('h1 {font-size: 18pt; color: #0066cc; border-bottom: 2px solid #0066cc; padding-bottom: 5px; margin-bottom: 15px;}')
+    html_parts.append('h2 {font-size: 14pt; color: #0066cc; margin-top: 20px; margin-bottom: 10px; border-bottom: 1px solid #ccc; padding-bottom: 3px;}')
+    html_parts.append('h3 {font-size: 12pt; color: #333; margin-top: 15px; margin-bottom: 8px;}')
+    html_parts.append('code {background: #f5f5f5; padding: 1px 3px; border-radius: 2px; font-size: 10pt;}')
+    html_parts.append('pre {background: #f5f5f5; padding: 8px; border-radius: 3px; border-left: 2px solid #0066cc; page-break-inside: avoid;}')
+    html_parts.append('blockquote {border-left: 3px solid #0066cc; padding-left: 10px; margin: 10px 0; background: #f9f9f9;}')
+    html_parts.append('table {border-collapse: collapse; width: 100%; margin: 10px 0; page-break-inside: avoid;}')
+    html_parts.append('th, td {border: 1px solid #ddd; padding: 6px; font-size: 10pt;}')
+    html_parts.append('th {background-color: #0066cc; color: white;}')
+    html_parts.append('ul, ol {margin-left: 15px; margin-top: 8px; margin-bottom: 8px;}')
+    html_parts.append('.mermaid {margin: 15px 0; padding: 10px; background: #f0f0f0; border: 1px solid #ccc; page-break-inside: avoid;}')
+    html_parts.append('.header, .footer {display: none;}')
+    html_parts.append('.mermaid svg {max-width: 100% !important; height: auto !important;}')
+    html_parts.append('}')
+    html_parts.append('</style>')
+    html_parts.append('</head>')
+    html_parts.append('<body>')
+    html_parts.append('<div class="header">')
+    html_parts.append('<h1>Rate Limiter Documentation</h1>')
+    html_parts.append('<p>Generated from Rate Limiter.md</p>')
+    html_parts.append('<p style="font-size: 0.85em; color: #888;">Mermaid diagrams are rendered below</p>')
+    html_parts.append('</div>')
+    html_parts.append('<div id="content">')
+    html_parts.append(html_content)
+    html_parts.append('</div>')
+    html_parts.append('<div class="footer">')
+    html_parts.append(f'<p>Generated: {Path("Rate Limiter.md").stat().st_mtime if Path("Rate Limiter.md").exists() else "N/A"}</p>')
+    html_parts.append(f'<p>{len(mermaid_blocks)} Mermaid diagram(s) rendered with Mermaid.js</p>')
+    html_parts.append('<p>For printing: Use Ctrl+P and select "Save as PDF"</p>')
+    html_parts.append('</div>')
+    html_parts.append('<script>')
+    html_parts.append('document.addEventListener("DOMContentLoaded", function() {')
+    html_parts.append('var blocks = document.querySelectorAll("pre code");')
+    html_parts.append('for (var i = 0; i < blocks.length; i++) {')
+    html_parts.append('if (typeof hljs !== "undefined") { hljs.highlightElement(blocks[i]); }')
+    html_parts.append('}')
+    html_parts.append('var mermaidBlocks = document.querySelectorAll(".mermaid");')
+    html_parts.append('if (typeof mermaid !== "undefined" && mermaidBlocks.length > 0) {')
+    html_parts.append('mermaid.initialize({ startOnLoad: false, theme: "default", securityLevel: "loose" });')
+    html_parts.append('mermaid.init(undefined, mermaidBlocks);')
+    html_parts.append('}')
+    html_parts.append('});')
+    html_parts.append('</script>')
+    html_parts.append('</body>')
+    html_parts.append('</html>')
     
-    # Replace mermaid blocks in HTML with styled divs
-    for i, block in enumerate(mermaid_blocks):
-        # Find and replace the mermaid code blocks in the HTML
-        mermaid_div = f'''
-        <div class="mermaid-code">
-            <strong>Mermaid Diagram {i+1}</strong>
-            <pre>{block}</pre>
-            <em>Copy this code to mermaid.live to visualize</em>
-        </div>'''
-        
-        # Replace the markdown code block representation in HTML
-        # The markdown conversion creates <pre><code> blocks for the code
-        old_pattern = f'<pre><code>{re.escape(block)}</code></pre>'
-        # But we need to handle the fact that markdown might have escaped some characters
-        # Let's use a more flexible approach
-        styled_html = styled_html.replace(
-            f'<pre><code>{block}</code></pre>',
-            mermaid_div
-        )
-    
-    return styled_html
-
-def create_html_file(html_content, output_path):
-    """Save HTML content to file"""
-    with open(output_path, 'w', encoding='utf-8') as f:
-        f.write(html_content)
-    print(f"✅ HTML file created: {output_path}")
+    return '\n'.join(html_parts)
 
 def main():
     """Main conversion function"""
@@ -331,11 +123,12 @@ def main():
     with open(input_file, 'r', encoding='utf-8') as f:
         md_content = f.read()
     
-    print("🔄 Converting Markdown to printable HTML...")
-    html_content = create_printable_html(md_content)
+    print("🔄 Converting Markdown to HTML with Mermaid.js rendering...")
+    html_content = create_html_with_mermaid(md_content)
     
     print("💾 Saving HTML file...")
-    create_html_file(html_content, html_output)
+    with open(html_output, 'w', encoding='utf-8') as f:
+        f.write(html_content)
     
     print("\n" + "="*60)
     print("✅ SUCCESS! HTML file generated successfully")
@@ -343,19 +136,16 @@ def main():
     print(f"📄 HTML file: {html_output.absolute()}")
     print(f"📊 File size: {html_output.stat().st_size / 1024:.1f} KB")
     print()
-    print("📋 NEXT STEPS TO CREATE PDF:")
+    print("📋 INSTRUCTIONS:")
     print("   1. Open the HTML file in your web browser")
-    print("   2. Use browser's Print function (Ctrl+P or Cmd+P)")
-    print("   3. Choose 'Save as PDF' or 'Print to PDF' in the printer dropdown")
-    print("   4. Adjust margins if needed (I recommend 'Narrow' or 'Minimum')")
-    print("   5. Save the PDF")
+    print("   2. Mermaid diagrams will render automatically")
+    print("   3. To create PDF: Press Ctrl+P → Choose 'Save as PDF'")
+    print("   4. For best results: Use 'Narrow' margins in print settings")
     print()
-    print("💡 ALTERNATIVE: You can also use online tools like:")
-    print("   - https://www.sejda.com/html-to-pdf")
-    print("   - https://html2pdf.com/")
-    print()
-    print("🔧 For Mermaid diagrams, visit: https://mermaid.live/")
-    print("   Paste the Mermaid code blocks to visualize them")
+    print("💡 TIPS:")
+    print("   • Works offline after first load (CDN cached)")
+    print("   • Diagrams print perfectly to PDF")
+    print("   • No need to copy/paste Mermaid code")
     print("="*60)
 
 if __name__ == "__main__":
