@@ -1,0 +1,40 @@
+# Common files to ignore
+*.log
+*.tmp
+*.swp
+*~
+
+# IDE files
+.vscode/
+.idea/
+*.suo
+*.user
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Build outputs
+build/
+dist/
+out/
+
+# Dependencies
+node_modules/
+vendor/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Cache
+.cache/
+.nyc_output/
+coverage/
+
+# Lock files (optional - you may want to commit these)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
