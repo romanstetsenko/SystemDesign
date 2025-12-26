@@ -24,7 +24,8 @@ ul, ol {margin-left: 20px; margin-top: 4px; margin-bottom: 4px;}
 li {margin-bottom: 3px;}
 a {color: #3498db; text-decoration: none;}
 a:hover {text-decoration: underline;}
-.mermaid {margin: 8px 0; padding: 10px; background: #f8f9fa; border: 1px solid #3498db; border-radius: 4px; text-align: center;}
+.mermaid {margin: 8px 0; padding: 10px; background: #f8f9fa; border: 1px solid #3498db; border-radius: 4px; text-align: center; font-size: 14px;}
+.mermaid svg {font-size: 14px;}
 .header {text-align: center; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 2px solid #3498db;}
 .footer {text-align: center; font-size: 0.8em; color: #666; margin-top: 10px; padding-top: 8px; border-top: 1px solid #bdc3c7;}
 @media print {
@@ -39,9 +40,9 @@ table {border-collapse: collapse; width: 100%; margin: 4px 0; page-break-inside:
 th, td {border: 1px solid #ddd; padding: 4px; font-size: 9pt;}
 th {background-color: #0066cc; color: white;}
 ul, ol {margin-left: 12px; margin-top: 3px; margin-bottom: 3px;}
-.mermaid {margin: 4px 0; padding: 6px; background: #f0f0f0; border: 1px solid #ccc; page-break-inside: avoid;}
+.mermaid {margin: 4px 0; padding: 6px; background: #f0f0f0; border: 1px solid #ccc; page-break-inside: avoid; font-size: 12px;}
 .header, .footer {display: none;}
-.mermaid svg {max-width: 100% !important; height: auto !important;}
+.mermaid svg {max-width: 100% !important; height: auto !important; font-size: 12px;}
 }
 </style>
 </head>
@@ -174,7 +175,7 @@ sequenceDiagram
 </div>
 <script>
 // Initialize Mermaid with startOnLoad: true as per instructions
-mermaid.initialize({ startOnLoad: true, theme: "default", securityLevel: "loose" });
+mermaid.initialize({ startOnLoad: true, theme: "default", securityLevel: "loose", fontFamily: "Arial, sans-serif", fontSize: 14 });
 </script>
 <script>
 // Highlight code blocks (non-mermaid)
