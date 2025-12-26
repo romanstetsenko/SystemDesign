@@ -41,10 +41,11 @@ if exist "Rate Limiter.html" (
 
 echo.
 echo 💡 TIPS:
-echo    • Mermaid diagrams render automatically in the browser
+echo    • Mermaid diagrams render automatically using <pre class="mermaid"> tags
+echo    • Uses Mermaid.js ESM module for modern browser support
 echo    • Works offline after first CDN load
 echo    • For editing: Modify Rate Limiter.md and re-run this script
-echo    • Mermaid code blocks are converted to visual diagrams
+echo    • Diagrams appear as visual flowcharts, not code blocks
 echo.
 echo Done!
 pause
