@@ -20,24 +20,53 @@ def create_html_with_mermaid(md_content):
     # Extract mermaid blocks
     mermaid_blocks = extract_mermaid_blocks(md_content)
     
-    # Replace mermaid blocks with placeholders
-    clean_md = md_content
-    for i, block in enumerate(mermaid_blocks):
-        placeholder = f"\n\n<div class=\"mermaid\">{block}</div>\n\n"
-        pattern = r'```mermaid\s*\n.*?\n```'
-        clean_md = re.sub(pattern, placeholder, clean_md, 1)
+    # Split content by mermaid blocks and process each segment
+    segments = []
+    last_end = 0
     
-    # Convert to HTML
-    html_content = markdown(clean_md, extensions=['extra', 'codehilite', 'tables'])
+    # Find all mermaid blocks and their positions
+    pattern = r'```mermaid\s*\n(.*?)\n```'
+    matches = list(re.finditer(pattern, md_content, re.DOTALL))
+    
+    for i, match in enumerate(matches):
+        # Add the text before this mermaid block
+        before_text = md_content[last_end:match.start()]
+        if before_text.strip():
+            segments.append(('markdown', before_text))
+        
+        # Add the mermaid block
+        mermaid_code = match.group(1)
+        segments.append(('mermaid', mermaid_code))
+        
+        last_end = match.end()
+    
+    # Add remaining text after last mermaid block
+    remaining = md_content[last_end:]
+    if remaining.strip():
+        segments.append(('markdown', remaining))
+    
+    # Convert markdown segments to HTML
+    html_parts = []
+    for seg_type, content in segments:
+        if seg_type == 'markdown':
+            # Convert markdown to HTML
+            converted = markdown(content, extensions=['extra', 'codehilite', 'tables'])
+            html_parts.append(converted)
+        else:  # mermaid
+            # Add as pre class="mermaid"
+            html_parts.append(f'<pre class="mermaid">\n{content}\n</pre>')
+    
+    html_content = ''.join(html_parts)
     
     # Build the complete HTML in parts to avoid f-string issues
     html_parts = []
     html_parts.append('<!DOCTYPE html>')
-    html_parts.append('<html>')
+    html_parts.append('<html lang="en">')
     html_parts.append('<head>')
     html_parts.append('<meta charset="UTF-8">')
+    html_parts.append('<meta name="viewport" content="width=device-width, initial-scale=1.0">')
     html_parts.append('<title>Rate Limiter Documentation</title>')
-    html_parts.append('<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>')
+    html_parts.append('<script type="module" src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"></script>')
     html_parts.append('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">')
     html_parts.append('<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>')
     html_parts.append('<style>')
@@ -93,15 +122,17 @@ def create_html_with_mermaid(md_content):
     html_parts.append('<p>For printing: Use Ctrl+P and select "Save as PDF"</p>')
     html_parts.append('</div>')
     html_parts.append('<script>')
+    html_parts.append('// Initialize Mermaid with startOnLoad: true as per instructions')
+    html_parts.append('mermaid.initialize({ startOnLoad: true, theme: "default", securityLevel: "loose" });')
+    html_parts.append('</script>')
+    html_parts.append('<script>')
+    html_parts.append('// Highlight code blocks (non-mermaid)')
     html_parts.append('document.addEventListener("DOMContentLoaded", function() {')
     html_parts.append('var blocks = document.querySelectorAll("pre code");')
     html_parts.append('for (var i = 0; i < blocks.length; i++) {')
-    html_parts.append('if (typeof hljs !== "undefined") { hljs.highlightElement(blocks[i]); }')
+    html_parts.append('if (typeof hljs !== "undefined" && !blocks[i].classList.contains("mermaid")) {')
+    html_parts.append('hljs.highlightElement(blocks[i]);')
     html_parts.append('}')
-    html_parts.append('var mermaidBlocks = document.querySelectorAll(".mermaid");')
-    html_parts.append('if (typeof mermaid !== "undefined" && mermaidBlocks.length > 0) {')
-    html_parts.append('mermaid.initialize({ startOnLoad: false, theme: "default", securityLevel: "loose" });')
-    html_parts.append('mermaid.init(undefined, mermaidBlocks);')
     html_parts.append('}')
     html_parts.append('});')
     html_parts.append('</script>')

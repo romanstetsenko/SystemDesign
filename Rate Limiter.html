@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Rate Limiter Documentation</title>
-<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script type="module" src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <style>
@@ -77,23 +78,22 @@ Efficient storage with TTL‑based cleanup.</p>
 <p>Flow: client → gateway → rate limiter → backend.<br />
 Components: API gateway, rate limiter service, configuration service, counter storage (Redis/DynamoDB), metrics/logging, optional coordination layer.<br />
 Variants: in‑process, centralized service, Redis‑based distributed limiter, edge/CDN enforcement.<br />
-Workflow: extract key → check counters → apply algorithm → allow/deny → log/metrics.</p>
-<pre class="codehilite"><code class="language-mermaid">flowchart LR
+Workflow: extract key → check counters → apply algorithm → allow/deny → log/metrics.</p><pre class="mermaid">
+flowchart LR
 
-    A[Client] --&gt; B[API Gateway&lt;br/&gt;Extract rate-limit key]
-    B --&gt; C[Rate Limiter Service&lt;br/&gt;Rule evaluation, algorithm logic, policy lookup]
-    C --&gt; D[Counter Storage&lt;br/&gt;Redis, DynamoDB, or in-memory&lt;br/&gt;Atomic ops, TTL, token state]
-    D --&gt; C
+    A[Client] --> B[API Gateway<br/>Extract rate-limit key]
+    B --> C[Rate Limiter Service<br/>Rule evaluation, algorithm logic, policy lookup]
+    C --> D[Counter Storage<br/>Redis, DynamoDB, or in-memory<br/>Atomic ops, TTL, token state]
+    D --> C
 
-    C --&gt;|Allow| E[Backend Service]
-    C --&gt;|Deny| F[HTTP 429 Too Many Requests]
+    C -->|Allow| E[Backend Service]
+    C -->|Deny| F[HTTP 429 Too Many Requests]
 
-    C --- G[Configuration Service&lt;br/&gt;Policy distribution, hot reload]
-    C --- H[Metrics and Logging&lt;br/&gt;Usage stats, observability]
-    C --- I[Distributed Coordination Layer&lt;br/&gt;Multi-region sync, consistency]
-</code></pre>
+    C --- G[Configuration Service<br/>Policy distribution, hot reload]
+    C --- H[Metrics and Logging<br/>Usage stats, observability]
+    C --- I[Distributed Coordination Layer<br/>Multi-region sync, consistency]
 
-<hr />
+</pre><hr />
 <h2><strong>5. Algorithms (How limits are enforced)</strong></h2>
 <p>Fixed window (simple, bursty).<br />
 Sliding window log (accurate, heavy).<br />
@@ -116,8 +116,8 @@ Centralized Redis cluster: atomic, low latency, hotspot‑prone.<br />
 Sharding via consistent hashing: spreads load.<br />
 Multi‑region: handle replication lag, divergence, partitions; use regional quotas, CRDTs, or token preallocation.<br />
 Consistency models: strong, eventual, bounded staleness.<br />
-Failure modes: fail‑open vs fail‑closed.</p>
-<pre class="codehilite"><code class="language-mermaid">flowchart LR
+Failure modes: fail‑open vs fail‑closed.</p><pre class="mermaid">
+flowchart LR
     subgraph RegionA
         GA[Gateways]
         RA[Redis Shard A]
@@ -128,12 +128,10 @@ Failure modes: fail‑open vs fail‑closed.</p>
         RB[Redis Shard B]
     end
 
-    GA --&gt; RA
-    GB --&gt; RB
-    RA &lt;--&gt; RB
-</code></pre>
-
-<hr />
+    GA --> RA
+    GB --> RB
+    RA <--> RB
+</pre><hr />
 <h2><strong>8. Enforcement Placement (Where limits are applied)</strong></h2>
 <p>Client‑side (rare).<br />
 Edge gateways (Cloudflare/AWS).<br />
@@ -153,23 +151,21 @@ Monitor latency, errors, key distribution, refill behavior, cross‑region sync 
 <p>Token bucket + Redis with atomic Lua scripts.<br />
 Multi‑region token distribution.<br />
 Tenant‑specific policies.<br />
-Dashboards and logs for debugging.  </p>
-<pre class="codehilite"><code class="language-mermaid">sequenceDiagram
+Dashboards and logs for debugging.  </p><pre class="mermaid">
+sequenceDiagram
     participant Client
     participant Gateway
     participant Limiter
     participant Redis
     participant Backend
 
-    Client-&gt;&gt;Gateway: Request
-    Gateway-&gt;&gt;Limiter: Check rate limit
-    Limiter-&gt;&gt;Redis: Atomic token update
-    Redis--&gt;&gt;Limiter: Result
-    Limiter--&gt;&gt;Gateway: Allow or Deny
-    Gateway-&gt;&gt;Backend: Forward if allowed
-</code></pre>
-
-<hr />
+    Client->>Gateway: Request
+    Gateway->>Limiter: Check rate limit
+    Limiter->>Redis: Atomic token update
+    Redis-->>Limiter: Result
+    Limiter-->>Gateway: Allow or Deny
+    Gateway->>Backend: Forward if allowed
+</pre><hr />
 </div>
 <div class="footer">
 <p>Generated: 1766782375.8168092</p>
@@ -177,15 +173,17 @@ Dashboards and logs for debugging.  </p>
 <p>For printing: Use Ctrl+P and select "Save as PDF"</p>
 </div>
 <script>
+// Initialize Mermaid with startOnLoad: true as per instructions
+mermaid.initialize({ startOnLoad: true, theme: "default", securityLevel: "loose" });
+</script>
+<script>
+// Highlight code blocks (non-mermaid)
 document.addEventListener("DOMContentLoaded", function() {
 var blocks = document.querySelectorAll("pre code");
 for (var i = 0; i < blocks.length; i++) {
-if (typeof hljs !== "undefined") { hljs.highlightElement(blocks[i]); }
+if (typeof hljs !== "undefined" && !blocks[i].classList.contains("mermaid")) {
+hljs.highlightElement(blocks[i]);
 }
-var mermaidBlocks = document.querySelectorAll(".mermaid");
-if (typeof mermaid !== "undefined" && mermaidBlocks.length > 0) {
-mermaid.initialize({ startOnLoad: false, theme: "default", securityLevel: "loose" });
-mermaid.init(undefined, mermaidBlocks);
 }
 });
 </script>
