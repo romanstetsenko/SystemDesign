@@ -87,7 +87,7 @@ def create_html_with_mermaid(md_content):
     html_parts.append('a {color: #3498db; text-decoration: none;}')
     html_parts.append('a:hover {text-decoration: underline;}')
     html_parts.append('.mermaid {margin: 8px 0; padding: 10px; background: #f8f9fa; border: 1px solid #3498db; border-radius: 4px; text-align: center; font-size: 14px;}')
-    html_parts.append('.mermaid svg {font-size: 14px;}')
+    html_parts.append('.mermaid svg {font-size: 16px;}')
     html_parts.append('.header {text-align: center; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 2px solid #3498db;}')
     html_parts.append('.footer {text-align: center; font-size: 0.8em; color: #666; margin-top: 10px; padding-top: 8px; border-top: 1px solid #bdc3c7;}')
     html_parts.append('@media print {')
