@@ -38,7 +38,7 @@ Variants: in‑process, centralized service, Redis‑based distributed limiter, 
 Workflow: extract key → check counters → apply algorithm → allow/deny → log/metrics.
 
 ```mermaid 
-flowchart TD
+flowchart LR
 
     A[Client] --> B[API Gateway<br/>Extract rate-limit key]
     B --> C[Rate Limiter Service<br/>Rule evaluation, algorithm logic, policy lookup]
