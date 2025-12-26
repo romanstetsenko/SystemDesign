@@ -1,9 +1,14 @@
 @echo off
-REM Batch script to convert Markdown to PDF
+REM Batch script to convert Markdown to PDF with rendered Mermaid diagrams
 REM This will open the HTML file in your default browser for printing
 
 echo Rate Limiter Documentation Converter
 echo =====================================
+echo.
+echo This script will:
+echo 1. Convert Rate Limiter.md to HTML
+echo 2. Render Mermaid diagrams using Mermaid.js
+echo 3. Open in your browser for PDF printing
 echo.
 
 REM Check if the HTML file exists
@@ -14,10 +19,11 @@ if exist "Rate Limiter.html" (
     start "" "Rate Limiter.html"
     echo.
     echo INSTRUCTIONS:
-    echo 1. When the browser opens, press Ctrl+P (or Cmd+P on Mac)
-    echo 2. Select "Save as PDF" or "Print to PDF" as the printer
-    echo 3. Choose your preferred settings (margins, layout, etc.)
-    echo 4. Click "Save" or "Print"
+    echo 1. Wait for diagrams to render (1-2 seconds)
+    echo 2. Press Ctrl+P to print
+    echo 3. Select "Save as PDF" or "Print to PDF"
+    echo 4. Use 'Narrow' margins for best results
+    echo 5. Click "Save" or "Print"
     echo.
 ) else (
     echo ❌ HTML file not found. Running conversion script first...
@@ -33,5 +39,12 @@ if exist "Rate Limiter.html" (
     start "" "Rate Limiter.html"
 )
 
+echo.
+echo 💡 TIPS:
+echo    • Mermaid diagrams render automatically in the browser
+echo    • Works offline after first CDN load
+echo    • For editing: Modify Rate Limiter.md and re-run this script
+echo    • Mermaid code blocks are converted to visual diagrams
+echo.
 echo Done!
 pause
