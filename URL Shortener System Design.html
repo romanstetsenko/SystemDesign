@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>URL Shortener System Design</title>
+<script type="module" src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<style>
+body {font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; line-height: 1.5; color: #333; max-width: 100%; margin: 0; padding: 5px 10px; background: #ffffff;}
+h1 {font-size: 1.8em; border-bottom: 2px solid #3498db; padding-bottom: 5px; margin: 10px 0 8px 0; color: #2c3e50;}
+h2 {font-size: 1.4em; border-bottom: 1px solid #bdc3c7; padding-bottom: 3px; margin: 8px 0 6px 0; color: #2c3e50;}
+h3 {font-size: 1.2em; color: #34495e; margin: 6px 0 4px 0;}
+p {margin: 6px 0;}
+code {background: #f8f9fa; padding: 2px 6px; border-radius: 3px; font-family: "Courier New", monospace; font-size: 0.95em; color: #c7254e;}
+pre {background: #f8f9fa; padding: 8px; border-radius: 3px; border-left: 3px solid #3498db; overflow-x: auto; margin: 8px 0;}
+blockquote {border-left: 3px solid #3498db; padding-left: 8px; margin: 8px 0; color: #555; background: #f8f9fa; font-style: italic;}
+table {border-collapse: collapse; width: 100%; margin: 8px 0;}
+th, td {border: 1px solid #ddd; padding: 6px; text-align: left;}
+th {background-color: #3498db; color: white; font-weight: bold;}
+tr:nth-child(even) {background-color: #f9f9f9;}
+ul, ol {margin-left: 20px; margin-top: 4px; margin-bottom: 4px;}
+li {margin-bottom: 3px;}
+a {color: #3498db; text-decoration: none;}
+a:hover {text-decoration: underline;}
+.mermaid {margin: 8px 0; padding: 10px; background: #f8f9fa; border: 1px solid #3498db; border-radius: 4px; text-align: center; font-size: 14px;}
+.mermaid svg {font-size: 16px;}
+.header {text-align: center; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 2px solid #3498db;}
+.footer {text-align: center; font-size: 0.8em; color: #666; margin-top: 10px; padding-top: 8px; border-top: 1px solid #bdc3c7;}
+@media print {
+body {font-family: Arial, sans-serif; line-height: 1.4; color: #000; margin: 0.1in; font-size: 10pt; max-width: 100%;}
+h1 {font-size: 16pt; color: #0066cc; border-bottom: 1px solid #0066cc; padding-bottom: 3px; margin: 8px 0 6px 0;}
+h2 {font-size: 13pt; color: #0066cc; margin: 6px 0 4px 0; border-bottom: 1px solid #ccc; padding-bottom: 2px;}
+h3 {font-size: 11pt; color: #333; margin: 4px 0 3px 0;}
+code {background: #f5f5f5; padding: 1px 2px; border-radius: 2px; font-size: 9pt;}
+pre {background: #f5f5f5; padding: 4px; border-radius: 2px; border-left: 2px solid #0066cc; page-break-inside: avoid; margin: 4px 0;}
+blockquote {border-left: 2px solid #0066cc; padding-left: 6px; margin: 4px 0; background: #f9f9f9;}
+table {border-collapse: collapse; width: 100%; margin: 4px 0; page-break-inside: avoid;}
+th, td {border: 1px solid #ddd; padding: 4px; font-size: 9pt;}
+th {background-color: #0066cc; color: white;}
+ul, ol {margin-left: 12px; margin-top: 3px; margin-bottom: 3px;}
+.mermaid {margin: 4px 0; padding: 6px; background: #f0f0f0; border: 1px solid #ccc; page-break-inside: avoid; font-size: 12px;}
+.header, .footer {display: none;}
+.mermaid svg {max-width: 100% !important; height: auto !important; font-size: 12px;}
+}
+</style>
+</head>
+<body>
+<div class="header">
+<h1>URL Shortener System Design</h1>
+<p>Generated from URL Shortener System Design.md</p>
+<p style="font-size: 0.85em; color: #888;">Mermaid diagrams are rendered below</p>
+</div>
+<div id="content">
+<h1>URL Shortener System Design - Two‑Page Summary</h1>
+<h2>1. Core Principles</h2>
+<ul>
+<li><strong>Uniqueness</strong> - each short code must map to exactly one long URL. </li>
+<li><strong>Low Latency</strong> - redirects must complete in a few milliseconds. </li>
+<li><strong>Persistence &amp; Durability</strong> - mappings must survive failures for years.</li>
+<li><strong>Scalability</strong> - billions of reads/writes; horizontal scaling required. </li>
+<li><strong>Security &amp; Trust</strong> - block malicious URLs, prevent abuse.</li>
+<li><strong>Extensibility</strong> - support analytics, custom domains, expiration, etc.</li>
+</ul>
+<h2>2. High‑Level Architecture</h2><pre class="mermaid">
+graph TB
+    subgraph "Client Layer"
+        U[User Browser]
+        M[Mobile Apps]
+        API[API Clients]
+    end
+
+    subgraph "Load Balancer"
+        LB[Load Balancer]
+    end
+
+    subgraph "API Services"
+        AS[API Server]
+        CG[Code Generator]
+        RS[Redirect Service]
+    end
+
+    subgraph "Caching Layer"
+        RC[Redis Cluster]
+        MC[Memcached]
+    end
+
+    subgraph "Storage Layer"
+        DB[(Primary DB)]
+        CS[(Cold Storage)]
+        RSDB[(Replica DB)]
+    end
+
+    subgraph "Analytics & Monitoring"
+        AL[Analytics Logger]
+        ES[Elasticsearch]
+        MG[Monitoring]
+    end
+
+    subgraph "CDN & Edge"
+        CDN[CDN Edge]
+        DNS[DNS]
+    end
+
+    U --> LB
+    M --> LB
+    API --> LB
+
+    LB --> AS
+    LB --> RS
+
+    AS --> CG
+    AS --> DB
+    AS --> RC
+
+    RS --> RC
+    RS --> DB
+
+    CG --> DB
+
+    DB --> RSDB
+    DB --> CS
+
+    RS --> AL
+    AS --> AL
+
+    AL --> ES
+    MG --> DB
+    MG --> RC
+    MG --> AS
+
+    DNS --> CDN
+    CDN --> LB
+</pre><ul>
+<li><strong>Client &amp; API Layer</strong> - POST /shorten, GET /{code}.</li>
+<li><strong>Short Code Generation Service</strong> - hashing, sequential IDs, or random Base62.</li>
+<li><strong>Storage Layer</strong> - SQL or NoSQL; must support fast lookups.</li>
+<li><strong>Redirect Service</strong> - handles billions of GETs; must be ultra‑fast.</li>
+<li><strong>Cache Layer</strong> - Redis/Memcached for hot URLs.</li>
+<li><strong>Analytics Pipeline</strong> - optional; logs clicks, geos, devices, referrers.</li>
+</ul>
+<h2>3. System Flow Example (Mermaid Diagram)</h2><pre class="mermaid">
+sequenceDiagram
+    participant User
+    participant API as API Server
+    participant Gen as Code Generator
+    participant DB as Database
+    participant Cache as Cache
+    participant R as Redirect Service
+
+    User->>API: Submit long URL
+    API->>Gen: Generate short code
+    Gen-->>API: Return code
+    API->>DB: Store (code → long URL)
+    API-->>User: Return short URL
+
+    User->>R: Access short URL
+    R->>Cache: Lookup code
+    Cache-->>R: Hit or miss
+    R->>DB: Lookup if cache miss
+    DB-->>R: Return long URL
+    R->>Cache: Update cache
+    R-->>User: Redirect (301/302)
+</pre><h2>4. Shortening Process</h2>
+<ul>
+<li><strong>Input Validation</strong> - Syntax check, reachability, blacklist filtering.</li>
+<li><strong>Normalization</strong> - Lowercase domain, remove redundant params, canonicalize URL.</li>
+<li><strong>Short Code Generation</strong>  - <strong>Hashing</strong> (MD5/SHA‑256 → Base62).  - <strong>Sequential IDs</strong> (ID → Base62).  - <strong>Random Strings</strong> (fixed‑length Base62). Must avoid collisions at scale.</li>
+<li><strong>Store Mapping</strong> - Save code → URL + metadata (created_at, expiration, user_id).</li>
+<li><strong>Return Short URL</strong>     - Example: <code>https://short.ly/abc123</code>.</li>
+</ul>
+<h2>5. Redirect Flow</h2>
+<ul>
+<li><strong>Receive Request</strong> for <code>/abc123</code>.  </li>
+<li><strong>Cache Lookup</strong> - hot URLs must be served from Redis.  </li>
+<li><strong>DB Lookup</strong> if cache miss.  </li>
+<li><strong>Analytics Logging</strong> (async).  </li>
+<li><strong>Redirect</strong> with 301 or 302.</li>
+</ul>
+<p><strong>Performance Targets:</strong>  Sub‑50ms end‑to‑end.  95%+ cache hit ratio.  Edge servers for global latency reduction.</p>
+<h2>6. Storage Layer</h2>
+<p><strong>Requirements</strong> Fast reads/writes.Durability.High availability.Billions of rows.Efficient indexing</p>
+<h3>Options</h3>
+<ul>
+<li><strong>SQL</strong> - simple, consistent, but harder to scale horizontally.</li>
+<li><strong>NoSQL</strong> - Cassandra, DynamoDB, MongoDB; highly scalable.</li>
+<li><strong>Hybrid</strong> - SQL for writes, NoSQL/cache for reads.</li>
+</ul>
+<h3>Techniques</h3>
+<ul>
+<li>Primary key = short code → O(1) lookups. Sharding by code prefix. Cold storage for inactive links. WAL, snapshots, multi‑region replication.</li>
+</ul>
+<h2>7. Caching Strategies</h2>
+<ul>
+<li><strong>In‑Memory Cache</strong> (Redis/Memcached) for hot URLs.</li>
+<li><strong>Application Cache</strong> for ultra‑hot keys.</li>
+<li><strong>CDN Edge Caching</strong> for global traffic.</li>
+</ul>
+<h3>Eviction Policies</h3>
+<p>LRU, LFU, TTL‑based.</p>
+<h3>Challenges</h3>
+<p>Cache invalidation.Hot key overload → use consistent hashing</p>
+<h2>8. Scalability Challenges</h2>
+<ul>
+<li><strong>Short Code Generation at Scale</strong> - Avoid centralized bottlenecks; use distributed ID generators.</li>
+<li><strong>Database Scalability</strong> - SQL limits → move to NoSQL or sharded clusters.</li>
+<li><strong>Caching Infrastructure</strong> - Redis clustering, sharding.</li>
+<li><strong>Traffic Spikes</strong> - Auto‑scaling redirect servers; pre‑cache viral links.</li>
+<li><strong>Multi‑Region Scaling</strong> - Geo‑replication, Anycast routing, DNS load balancing.</li>
+<li><strong>Storage Growth</strong> - Partitioning, cold storage, TTL for expired links.</li>
+</ul>
+<h2>9. Fault Tolerance &amp; Reliability</h2>
+<ul>
+<li>Replication across regions. Cache cluster failover. Load balancing across redirect servers. Graceful degradation (redirects still work even if analytics fail). Disaster recovery: snapshots, backups, hot standbys.</li>
+</ul>
+<h2>10. API &amp; Service Design</h2>
+<h3>Essential Endpoints</h3>
+<ul>
+<li><code>POST /shorten</code> - create short link. </li>
+<li><code>GET /{shortCode}</code> - redirect. </li>
+<li><code>GET /stats/{shortCode}</code> - analytics. </li>
+<li><code>DELETE /{shortCode}</code> - expire/remove link.</li>
+</ul>
+<h3>Principles</h3>
+<ul>
+<li>RESTful design.Rate limiting.Authentication for bulk operations.Consistent error handling</li>
+</ul>
+<h3>Microservices Split</h3>
+<ul>
+<li>Shortening service.Redirect service.Analytics service</li>
+</ul>
+<h2>11. Security Considerations</h2>
+<ul>
+<li>Block phishing/malware URLs. CAPTCHA for bot protection. Rate limiting abusive clients. User authentication for custom links. Protect analytics data.</li>
+</ul>
+<h2>12. Analytics &amp; Monitoring</h2>
+<h3>Analytics</h3>
+<ul>
+<li>Click counts.Geo distribution.Device type.Referrer tracking</li>
+</ul>
+<h3>System Monitoring</h3>
+<ul>
+<li>Latency.Error rates.Traffic spikes.Cache hit ratio</li>
+</ul>
+</div>
+<div class="footer">
+<p>Generated: 1766870101.3269768</p>
+<p>2 Mermaid diagram(s) rendered with Mermaid.js</p>
+<p>For printing: Use Ctrl+P and select "Save as PDF"</p>
+</div>
+<script>
+// Initialize Mermaid with startOnLoad: true as per instructions
+mermaid.initialize({ startOnLoad: true, theme: "default", securityLevel: "loose", fontFamily: "Arial, sans-serif", fontSize: 14 });
+</script>
+<script>
+// Highlight code blocks (non-mermaid)
+document.addEventListener("DOMContentLoaded", function() {
+var blocks = document.querySelectorAll("pre code");
+for (var i = 0; i < blocks.length; i++) {
+if (typeof hljs !== "undefined" && !blocks[i].classList.contains("mermaid")) {
+hljs.highlightElement(blocks[i]);
+}
+}
+});
+</script>
+</body>
+</html>

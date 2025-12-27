@@ -8,6 +8,79 @@
 - **Extensibility** - support analytics, custom domains, expiration, etc.
 
 ## 2. High‑Level Architecture
+
+
+```mermaid
+graph TB
+    subgraph "Client Layer"
+        U[User Browser]
+        M[Mobile Apps]
+        API[API Clients]
+    end
+
+    subgraph "Load Balancer"
+        LB[Load Balancer]
+    end
+
+    subgraph "API Services"
+        AS[API Server]
+        CG[Code Generator]
+        RS[Redirect Service]
+    end
+
+    subgraph "Caching Layer"
+        RC[Redis Cluster]
+        MC[Memcached]
+    end
+
+    subgraph "Storage Layer"
+        DB[(Primary DB)]
+        CS[(Cold Storage)]
+        RSDB[(Replica DB)]
+    end
+
+    subgraph "Analytics & Monitoring"
+        AL[Analytics Logger]
+        ES[Elasticsearch]
+        MG[Monitoring]
+    end
+
+    subgraph "CDN & Edge"
+        CDN[CDN Edge]
+        DNS[DNS]
+    end
+
+    U --> LB
+    M --> LB
+    API --> LB
+
+    LB --> AS
+    LB --> RS
+
+    AS --> CG
+    AS --> DB
+    AS --> RC
+
+    RS --> RC
+    RS --> DB
+
+    CG --> DB
+
+    DB --> RSDB
+    DB --> CS
+
+    RS --> AL
+    AS --> AL
+
+    AL --> ES
+    MG --> DB
+    MG --> RC
+    MG --> AS
+
+    DNS --> CDN
+    CDN --> LB
+```
+
 - **Client & API Layer** - POST /shorten, GET /{code}.
 - **Short Code Generation Service** - hashing, sequential IDs, or random Base62.
 - **Storage Layer** - SQL or NoSQL; must support fast lookups.
