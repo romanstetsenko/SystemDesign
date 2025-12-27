@@ -65,7 +65,7 @@ def create_html_with_mermaid(md_content):
     html_parts.append('<head>')
     html_parts.append('<meta charset="UTF-8">')
     html_parts.append('<meta name="viewport" content="width=device-width, initial-scale=1.0">')
-    html_parts.append('<title>Rate Limiter Documentation</title>')
+    html_parts.append('<title>System Design Principles</title>')
     html_parts.append('<script type="module" src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"></script>')
     html_parts.append('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">')
     html_parts.append('<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>')
@@ -110,15 +110,15 @@ def create_html_with_mermaid(md_content):
     html_parts.append('</head>')
     html_parts.append('<body>')
     html_parts.append('<div class="header">')
-    html_parts.append('<h1>Rate Limiter Documentation</h1>')
-    html_parts.append('<p>Generated from Rate Limiter.md</p>')
+    html_parts.append('<h1>System Design Principles</h1>')
+    html_parts.append('<p>Generated from System Design Principles.md</p>')
     html_parts.append('<p style="font-size: 0.85em; color: #888;">Mermaid diagrams are rendered below</p>')
     html_parts.append('</div>')
     html_parts.append('<div id="content">')
     html_parts.append(html_content)
     html_parts.append('</div>')
     html_parts.append('<div class="footer">')
-    html_parts.append(f'<p>Generated: {Path("Rate Limiter.md").stat().st_mtime if Path("Rate Limiter.md").exists() else "N/A"}</p>')
+    html_parts.append(f'<p>Generated: {Path("System Design Principles.md").stat().st_mtime if Path("System Design Principles.md").exists() else "N/A"}</p>')
     html_parts.append(f'<p>{len(mermaid_blocks)} Mermaid diagram(s) rendered with Mermaid.js</p>')
     html_parts.append('<p>For printing: Use Ctrl+P and select "Save as PDF"</p>')
     html_parts.append('</div>')
@@ -144,8 +144,8 @@ def create_html_with_mermaid(md_content):
 
 def main():
     """Main conversion function"""
-    input_file = Path("Rate Limiter.md")
-    html_output = Path("Rate Limiter.html")
+    input_file = Path("System Design Principles.md")
+    html_output = Path("System Design Principles.html")
     
     if not input_file.exists():
         print(f"❌ Error: Input file {input_file} not found")

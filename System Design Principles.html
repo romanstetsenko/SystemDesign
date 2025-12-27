@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>System Design Principles</title>
+<script type="module" src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<style>
+body {font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; line-height: 1.5; color: #333; max-width: 100%; margin: 0; padding: 5px 10px; background: #ffffff;}
+h1 {font-size: 1.8em; border-bottom: 2px solid #3498db; padding-bottom: 5px; margin: 10px 0 8px 0; color: #2c3e50;}
+h2 {font-size: 1.4em; border-bottom: 1px solid #bdc3c7; padding-bottom: 3px; margin: 8px 0 6px 0; color: #2c3e50;}
+h3 {font-size: 1.2em; color: #34495e; margin: 6px 0 4px 0;}
+p {margin: 6px 0;}
+code {background: #f8f9fa; padding: 2px 6px; border-radius: 3px; font-family: "Courier New", monospace; font-size: 0.95em; color: #c7254e;}
+pre {background: #f8f9fa; padding: 8px; border-radius: 3px; border-left: 3px solid #3498db; overflow-x: auto; margin: 8px 0;}
+blockquote {border-left: 3px solid #3498db; padding-left: 8px; margin: 8px 0; color: #555; background: #f8f9fa; font-style: italic;}
+table {border-collapse: collapse; width: 100%; margin: 8px 0;}
+th, td {border: 1px solid #ddd; padding: 6px; text-align: left;}
+th {background-color: #3498db; color: white; font-weight: bold;}
+tr:nth-child(even) {background-color: #f9f9f9;}
+ul, ol {margin-left: 20px; margin-top: 4px; margin-bottom: 4px;}
+li {margin-bottom: 3px;}
+a {color: #3498db; text-decoration: none;}
+a:hover {text-decoration: underline;}
+.mermaid {margin: 8px 0; padding: 10px; background: #f8f9fa; border: 1px solid #3498db; border-radius: 4px; text-align: center; font-size: 14px;}
+.mermaid svg {font-size: 16px;}
+.header {text-align: center; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 2px solid #3498db;}
+.footer {text-align: center; font-size: 0.8em; color: #666; margin-top: 10px; padding-top: 8px; border-top: 1px solid #bdc3c7;}
+@media print {
+body {font-family: Arial, sans-serif; line-height: 1.4; color: #000; margin: 0.1in; font-size: 10pt; max-width: 100%;}
+h1 {font-size: 16pt; color: #0066cc; border-bottom: 1px solid #0066cc; padding-bottom: 3px; margin: 8px 0 6px 0;}
+h2 {font-size: 13pt; color: #0066cc; margin: 6px 0 4px 0; border-bottom: 1px solid #ccc; padding-bottom: 2px;}
+h3 {font-size: 11pt; color: #333; margin: 4px 0 3px 0;}
+code {background: #f5f5f5; padding: 1px 2px; border-radius: 2px; font-size: 9pt;}
+pre {background: #f5f5f5; padding: 4px; border-radius: 2px; border-left: 2px solid #0066cc; page-break-inside: avoid; margin: 4px 0;}
+blockquote {border-left: 2px solid #0066cc; padding-left: 6px; margin: 4px 0; background: #f9f9f9;}
+table {border-collapse: collapse; width: 100%; margin: 4px 0; page-break-inside: avoid;}
+th, td {border: 1px solid #ddd; padding: 4px; font-size: 9pt;}
+th {background-color: #0066cc; color: white;}
+ul, ol {margin-left: 12px; margin-top: 3px; margin-bottom: 3px;}
+.mermaid {margin: 4px 0; padding: 6px; background: #f0f0f0; border: 1px solid #ccc; page-break-inside: avoid; font-size: 12px;}
+.header, .footer {display: none;}
+.mermaid svg {max-width: 100% !important; height: auto !important; font-size: 12px;}
+}
+</style>
+</head>
+<body>
+<div class="header">
+<h1>System Design Principles</h1>
+<p>Generated from System Design Principles.md</p>
+<p style="font-size: 0.85em; color: #888;">Mermaid diagrams are rendered below</p>
+</div>
+<div id="content">
+<h2>Scalability (Preparing the system to grow)</h2>
+<p>Scalability ensures your architecture can handle more users, more data, or more requests without major rewrites.<br />
+You typically start with a single server, but as traffic increases you scale vertically (bigger machine) or horizontally (more machines).<br />
+Key techniques include load balancers, separating concerns, using queues to decouple services, and adding read replicas to distribute database load.<br />
+A scalable system buys you time and prevents emergency redesigns during traffic spikes.</p>
+<h2>Reliability (Building for failure)</h2>
+<p>Failures are guaranteed, so systems must recover gracefully.<br />
+Reliability means adding retries, timeouts, monitoring, and isolating components so one failure doesn’t cascade.<br />
+Graceful degradation ensures that if one feature breaks, others continue working — cached data, defaults, or fallback paths keep the user experience intact.<br />
+A reliable system never fails entirely; it fails partially and predictably.</p>
+<h2>Maintainability (Designing for change)</h2>
+<p>A system you cannot change is a system you cannot grow.<br />
+Maintainability comes from simplicity: clear naming, standard protocols, modular components, and avoiding clever hacks.<br />
+Smaller, well‑defined services are easier to update without breaking the whole system.<br />
+Always design with your future self or teammate in mind.</p>
+<h2>Performance (Speed and efficiency)</h2>
+<p>Performance ensures your system responds quickly and uses resources effectively.<br />
+You optimize databases, cache expensive operations, move static content to CDNs, and monitor latency.<br />
+Profiling tools help you identify slow paths so you optimize what matters most.<br />
+Performance is not about being the fastest — it’s about being fast enough, efficient enough, and stable enough.</p>
+<h2>Security (Protecting what matters)</h2>
+<p>Security is a habit, not an advanced topic.<br />
+You decide what data should be public or private, use HTTPS, encrypt sensitive data at rest, validate input, sanitize output, and limit permissions.<br />
+Never store plain passwords; use tokens and MFA when appropriate.<br />
+Building security in from the start prevents costly fixes later.</p>
+<h2>How to Apply These Principles</h2>
+<h3>Start with small, focused projects</h3>
+<p>Practice with simple systems like messaging services or file uploads.<br />
+Sketch basic architectures and ask how they change under scale, failure, or security constraints.</p>
+<h3>Use every project as a principles test</h3>
+<p>Ask:
+- Can this scale?
+- What happens during partial failure?
+- How hard is it to modify?
+- Where are the performance bottlenecks?
+- Is sensitive data protected?</p>
+<h3>Reflect, refactor, repeat</h3>
+<p>Review what worked and what didn’t.<br />
+Refactor with new principles in mind: add monitoring, split components, simplify over‑engineering.<br />
+Iteration builds intuition and fluency.</p>
+<h2>Final Thoughts</h2>
+<p>System design principles are habits, not rules.<br />
+They help you build systems that grow, recover, evolve, and protect users.<br />
+Start with one principle, apply it, then layer in the next.<br />
+Over time, your designs become clearer, more consistent, and more effective.</p>
+</div>
+<div class="footer">
+<p>Generated: 1766858654.0633752</p>
+<p>0 Mermaid diagram(s) rendered with Mermaid.js</p>
+<p>For printing: Use Ctrl+P and select "Save as PDF"</p>
+</div>
+<script>
+// Initialize Mermaid with startOnLoad: true as per instructions
+mermaid.initialize({ startOnLoad: true, theme: "default", securityLevel: "loose", fontFamily: "Arial, sans-serif", fontSize: 14 });
+</script>
+<script>
+// Highlight code blocks (non-mermaid)
+document.addEventListener("DOMContentLoaded", function() {
+var blocks = document.querySelectorAll("pre code");
+for (var i = 0; i < blocks.length; i++) {
+if (typeof hljs !== "undefined" && !blocks[i].classList.contains("mermaid")) {
+hljs.highlightElement(blocks[i]);
+}
+}
+});
+</script>
+</body>
+</html>
