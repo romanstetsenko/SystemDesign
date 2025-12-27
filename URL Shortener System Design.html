@@ -65,120 +65,223 @@ ul, ol {margin-left: 12px; margin-top: 3px; margin-bottom: 3px;}
 </ul>
 <h2>2. High‑Level Architecture</h2><pre class="mermaid">
 graph TB
+    %% Client Layer - User Interaction Points
     subgraph "Client Layer"
         U[User Browser]
         M[Mobile Apps]
         API[API Clients]
     end
-
-    subgraph "Load Balancer"
+    
+    %% Load Balancing & Edge Layer
+    subgraph "Edge & Load Balancing"
+        DNS[DNS]
+        CDN[CDN Edge]
         LB[Load Balancer]
     end
-
-    subgraph "API Services"
-        AS[API Server]
-        CG[Code Generator]
+    
+    %% API Service Layer
+    subgraph "API Service Layer"
+        direction LR
+        AS[API Gateway]
         RS[Redirect Service]
+        SS[Shortening Service]
     end
-
+    
+    %% Core Business Logic
+    subgraph "Core Services"
+        CG[Code Generator]
+        VD[Validator]
+        NM[Normalizer]
+    end
+    
+    %% Caching Layer
     subgraph "Caching Layer"
         RC[Redis Cluster]
         MC[Memcached]
+        ECC[Edge Cache]
     end
-
+    
+    %% Storage Layer
     subgraph "Storage Layer"
+        direction TB
         DB[(Primary DB)]
-        CS[(Cold Storage)]
         RSDB[(Replica DB)]
+        CS[(Cold Storage)]
+        WAL[Write-ahead Log]
     end
-
-    subgraph "Analytics & Monitoring"
+    
+    %% Analytics Pipeline
+    subgraph "Analytics Pipeline"
         AL[Analytics Logger]
+        KF[Kafka Stream]
+        DW[Data Warehouse]
         ES[Elasticsearch]
+    end
+    
+    %% Monitoring & Observability
+    subgraph "Monitoring & Observability"
         MG[Monitoring]
+        ALM[Alert Manager]
+        LOG[Log Aggregation]
     end
-
-    subgraph "CDN & Edge"
-        CDN[CDN Edge]
-        DNS[DNS]
+    
+    %% Security Layer
+    subgraph "Security Layer"
+        BL[Blacklist Service]
+        RL[Rate Limiter]
+        CAP[CAPTCHA]
+        AUTH[Auth Service]
     end
-
-    U --> LB
-    M --> LB
-    API --> LB
-
+    
+    %% External Services
+    subgraph "External Services"
+        THREAT[Threat Intelligence]
+        GEO[GeoIP Service]
+    end
+    
+    %% ==================== FLOWS ====================
+    
+    %% Client to Edge Flow
+    U --> DNS
+    M --> DNS
+    API --> DNS
+    
+    DNS --> CDN
+    CDN --> LB
+    
+    %% API Request Flow
     LB --> AS
-    LB --> RS
-
-    AS --> CG
-    AS --> DB
-    AS --> RC
-
-    RS --> RC
-    RS --> DB
-
+    
+    %% Shortening Flow (Write Path)
+    AS --> SS
+    SS --> VD
+    SS --> NM
+    SS --> CG
+    SS --> AUTH
+    
+    VD --> BL
+    VD --> THREAT
+    
     CG --> DB
-
-    DB --> RSDB
-    DB --> CS
-
+    SS --> DB
+    
+    %% Redirect Flow (Read Path)
+    RS --> RC
+    RC -->|Cache Miss| DB
+    RS --> ECC
+    
+    %% Analytics Flow
     RS --> AL
-    AS --> AL
-
-    AL --> ES
+    SS --> AL
+    AL --> KF
+    KF --> DW
+    KF --> ES
+    
+    %% Monitoring Flow
     MG --> DB
     MG --> RC
     MG --> AS
-
-    DNS --> CDN
-    CDN --> LB
-</pre><ul>
-<li><strong>Client &amp; API Layer</strong> - POST /shorten, GET /{code}.</li>
-<li><strong>Short Code Generation Service</strong> - hashing, sequential IDs, or random Base62.</li>
-<li><strong>Storage Layer</strong> - SQL or NoSQL; must support fast lookups.</li>
-<li><strong>Redirect Service</strong> - handles billions of GETs; must be ultra‑fast.</li>
-<li><strong>Cache Layer</strong> - Redis/Memcached for hot URLs.</li>
-<li><strong>Analytics Pipeline</strong> - optional; logs clicks, geos, devices, referrers.</li>
-</ul>
-<h2>3. System Flow Example (Mermaid Diagram)</h2><pre class="mermaid">
-sequenceDiagram
-    participant User
-    participant API as API Server
-    participant Gen as Code Generator
-    participant DB as Database
-    participant Cache as Cache
-    participant R as Redirect Service
-
-    User->>API: Submit long URL
-    API->>Gen: Generate short code
-    Gen-->>API: Return code
-    API->>DB: Store (code → long URL)
-    API-->>User: Return short URL
-
-    User->>R: Access short URL
-    R->>Cache: Lookup code
-    Cache-->>R: Hit or miss
-    R->>DB: Lookup if cache miss
-    DB-->>R: Return long URL
-    R->>Cache: Update cache
-    R-->>User: Redirect (301/302)
-</pre><h2>4. Shortening Process</h2>
-<ul>
-<li><strong>Input Validation</strong> - Syntax check, reachability, blacklist filtering.</li>
-<li><strong>Normalization</strong> - Lowercase domain, remove redundant params, canonicalize URL.</li>
-<li><strong>Short Code Generation</strong>  - <strong>Hashing</strong> (MD5/SHA‑256 → Base62).  - <strong>Sequential IDs</strong> (ID → Base62).  - <strong>Random Strings</strong> (fixed‑length Base62). Must avoid collisions at scale.</li>
-<li><strong>Store Mapping</strong> - Save code → URL + metadata (created_at, expiration, user_id).</li>
-<li><strong>Return Short URL</strong>     - Example: <code>https://short.ly/abc123</code>.</li>
-</ul>
-<h2>5. Redirect Flow</h2>
-<ul>
-<li><strong>Receive Request</strong> for <code>/abc123</code>.  </li>
-<li><strong>Cache Lookup</strong> - hot URLs must be served from Redis.  </li>
-<li><strong>DB Lookup</strong> if cache miss.  </li>
-<li><strong>Analytics Logging</strong> (async).  </li>
-<li><strong>Redirect</strong> with 301 or 302.</li>
-</ul>
-<p><strong>Performance Targets:</strong>  Sub‑50ms end‑to‑end.  95%+ cache hit ratio.  Edge servers for global latency reduction.</p>
+    MG --> RS
+    MG --> AL
+    
+    %% Security Flow
+    SS --> RL
+    SS --> CAP
+    RS --> RL
+    
+    %% Storage Replication
+    DB --> RSDB
+    DB --> CS
+    DB --> WAL
+    
+    %% Geo Enrichment
+    AL --> GEO
+    
+    %% Alerting
+    MG --> ALM
+    LOG --> ALM
+    
+    %% Styling for visual clarity
+    style U fill:#e1f5fe
+    style M fill:#e1f5fe
+    style API fill:#e1f5fe
+    
+    style DNS fill:#e0f2f1
+    style CDN fill:#e0f2f1
+    style LB fill:#fff3e0
+    
+    style AS fill:#f3e5f5
+    style RS fill:#f3e5f5
+    style SS fill:#f3e5f5
+    
+    style CG fill:#fff9c4
+    style VD fill:#fff9c4
+    style NM fill:#fff9c4
+    
+    style RC fill:#e8f5e8
+    style MC fill:#e8f5e8
+    style ECC fill:#e8f5e8
+    
+    style DB fill:#fce4ec
+    style RSDB fill:#fce4ec
+    style CS fill:#f5f5f5
+    style WAL fill:#fff3e0
+    
+    style AL fill:#ffe0b2
+    style KF fill:#ffe0b2
+    style DW fill:#ffe0b2
+    style ES fill:#ffe0b2
+    
+    style MG fill:#e1f5fe
+    style ALM fill:#ffccbc
+    style LOG fill:#e1f5fe
+    
+    style BL fill:#ffcdd2
+    style RL fill:#ffcdd2
+    style CAP fill:#ffcdd2
+    style AUTH fill:#ffcdd2
+    
+    style THREAT fill:#f5f5f5
+    style GEO fill:#f5f5f5
+</pre><h3>Architecture Components Breakdown</h3>
+<p><strong>Client &amp; Edge Layer</strong>
+- <strong>DNS</strong>: Geo-routing and load distribution
+- <strong>CDN</strong>: Global edge caching for static content
+- <strong>Load Balancer</strong>: Distributes traffic across API servers</p>
+<p><strong>API Service Layer</strong>
+- <strong>API Gateway</strong>: Single entry point with rate limiting
+- <strong>Redirect Service</strong>: Optimized for high-throughput GET requests
+- <strong>Shortening Service</strong>: Handles URL validation and code generation</p>
+<p><strong>Core Business Logic</strong>
+- <strong>Code Generator</strong>: Creates unique short codes (Hash/ID/Random)
+- <strong>Validator</strong>: Syntax checks, blacklist validation
+- <strong>Normalizer</strong>: Canonicalizes URLs for consistency</p>
+<p><strong>Caching Layer</strong>
+- <strong>Redis Cluster</strong>: Hot URL mappings (sub-millisecond)
+- <strong>Memcached</strong>: Application-level cache for hot keys
+- <strong>Edge Cache</strong>: CDN-level caching for global performance</p>
+<p><strong>Storage Layer</strong>
+- <strong>Primary DB</strong>: Key-value store for mappings
+- <strong>Replica DB</strong>: Multi-region failover
+- <strong>Cold Storage</strong>: Archived inactive links
+- <strong>WAL</strong>: Write-ahead logging for durability</p>
+<p><strong>Analytics Pipeline</strong>
+- <strong>Analytics Logger</strong>: Async event collection
+- <strong>Kafka</strong>: Event streaming queue
+- <strong>Data Warehouse</strong>: Clickstream storage
+- <strong>Elasticsearch</strong>: Query and search capabilities</p>
+<p><strong>Monitoring &amp; Observability</strong>
+- <strong>Monitoring</strong>: Metrics collection (Grafana/Prometheus)
+- <strong>Alert Manager</strong>: PagerDuty integration
+- <strong>Log Aggregation</strong>: ELK stack for troubleshooting</p>
+<p><strong>Security Layer</strong>
+- <strong>Blacklist Service</strong>: Threat database integration
+- <strong>Rate Limiter</strong>: IP-based abuse prevention
+- <strong>CAPTCHA</strong>: Bot protection
+- <strong>Auth Service</strong>: API keys and OAuth</p>
+<p><strong>External Services</strong>
+- <strong>Threat Intelligence</strong>: Phishing/malware databases
+- <strong>GeoIP Service</strong>: Location enrichment for analytics</p>
 <h2>6. Storage Layer</h2>
 <p><strong>Requirements</strong> Fast reads/writes.Durability.High availability.Billions of rows.Efficient indexing</p>
 <h3>Options</h3>
@@ -245,8 +348,8 @@ sequenceDiagram
 </ul>
 </div>
 <div class="footer">
-<p>Generated: 1766870101.3269768</p>
-<p>2 Mermaid diagram(s) rendered with Mermaid.js</p>
+<p>Generated: 1766875437.3506136</p>
+<p>1 Mermaid diagram(s) rendered with Mermaid.js</p>
 <p>For printing: Use Ctrl+P and select "Save as PDF"</p>
 </div>
 <script>
