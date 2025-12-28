@@ -19,6 +19,12 @@ A collection of comprehensive system design guides with interactive diagrams and
 - Markdown files can be viewed directly on GitHub
 - HTML files provide interactive diagrams and syntax highlighting
 
+## 🌐 Deployed Applications
+
+**Live Demo:** [https://effective-seagull.static.domains/](https://effective-seagull.static.domains/)
+
+Access all documentation with interactive diagrams and syntax highlighting in a live web environment.
+
 ## 📖 Available Documents
 
 **Table of Contents:**
