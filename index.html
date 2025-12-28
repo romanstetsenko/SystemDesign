@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Design Documentation</title>
+    <style>
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #3498db;
+        }
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.2em;
+        }
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border-left: 4px solid #3498db;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+        .card h3 {
+            margin-top: 0;
+            color: #2c3e50;
+            font-size: 1.4em;
+        }
+        .card p {
+            color: #555;
+            margin: 10px 0;
+        }
+        .card a {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        .card a:hover {
+            background: #2980b9;
+            text-decoration: none;
+        }
+        .card .meta {
+            font-size: 0.9em;
+            color: #95a5a6;
+            margin-top: 5px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #bdc3c7;
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        .github-link {
+            display: inline-block;
+            margin-top: 10px;
+            color: #3498db;
+            text-decoration: none;
+        }
+        .github-link:hover {
+            text-decoration: underline;
+        }
+        .badge {
+            display: inline-block;
+            background: #27ae60;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📚 System Design Documentation</h1>
+        <div class="subtitle">Comprehensive guides and architectural patterns</div>
+    </div>
+
+    <div class="card-grid">
+        <div class="card">
+            <h3>🔗 URL Shortener System Design</h3>
+            <p>A complete design for a scalable URL shortening service including database schema, API design, and load balancing strategies.</p>
+            <div class="meta">Topics: Database Design, API, Scaling</div>
+            <a href="URL%20Shortener%20System%20Design.html">View Document →</a>
+        </div>
+
+        <div class="card">
+            <h3>⏱️ Rate Limiter Implementation</h3>
+            <p>Detailed guide on implementing rate limiting algorithms including Token Bucket, Leaky Bucket, and Fixed Window counters.</p>
+            <div class="meta">Topics: Algorithms, Performance, Security</div>
+            <a href="Rate%20Limiter.html">View Document →</a>
+        </div>
+
+        <div class="card">
+            <h3>🎯 System Design Principles</h3>
+            <p>Essential principles and best practices for designing scalable, reliable, and maintainable distributed systems.</p>
+            <div class="meta">Topics: Architecture, Best Practices</div>
+            <a href="System%20Design%20Principles.html">View Document →</a>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>All documents are rendered with Mermaid diagrams and syntax highlighting</p>
+        <a href="https://github.com/yourusername/SystemDesign" class="github-link" target="_blank">View on GitHub →</a>
+        <br>
+        <span class="badge">GitHub Pages Enabled</span>
+    </div>
+
+    <script>
+        // Add dynamic year to footer
+        document.querySelector('.footer p').innerHTML += '<br>© ' + new Date().getFullYear() + ' System Design Docs';
+    </script>
+</body>
+</html>
