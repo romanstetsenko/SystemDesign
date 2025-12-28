@@ -10,15 +10,15 @@
 ## 2. High‑Level Architecture
 
 ```mermaid
-graph TB
+graph LR
     %% User Layer
-    subgraph "Users"
+    subgraph Users[Users]
         U[User Browser]
         M[Mobile Apps]
     end
     
     %% Edge & Delivery Layer
-    subgraph "Edge Layer"
+    subgraph EdgeLayer[Edge Layer]
         DNS[DNS]
         CDN[CDN Edge]
         LB[Load Balancer]
@@ -32,26 +32,23 @@ graph TB
     end
     
     %% Core Storage & Cache
-    subgraph "Data Layer"
+    subgraph DataLayer[Data Layer]
         RC[Redis Cache]
         DB[(Database)]
     end
     
     %% Supporting Services
-    subgraph "Supporting Services"
+    subgraph SupportingServices[Supporting Services]
         CG[Code Generator]
         AL[Analytics]
         SEC[Security]
     end
     
     %% Monitoring
-    subgraph "Monitoring"
-        MON[Monitoring]
-    end
+    Monitoring[Monitoring]
     
     %% Main Flow
-    U --> DNS
-    M --> DNS
+    Users --> EdgeLayer
     DNS --> CDN
     CDN --> LB
     LB --> API
@@ -71,15 +68,9 @@ graph TB
     RS --> AL
     SS --> AL
     
-    %% Monitoring Flow (API -> Monitoring)
-    API --> MON
-    RS --> MON
-    SS --> MON
-    DB --> MON
-    RC --> MON
-    
-    %% Security Feedback
-    SEC --> API
+    DataLayer --> Monitoring
+    SupportingServices --> Monitoring
+    API --> SEC 
     
     %% Styling
     style U fill:#e1f5fe
@@ -95,32 +86,9 @@ graph TB
     style CG fill:#fff9c4
     style AL fill:#ffe0b2
     style SEC fill:#ffcdd2
-    style MON fill:#e1f5fe
+    style Monitoring fill:#e1f5fe
 ```
 
-### Architecture Components
-
-**Edge Layer**
-- **DNS**: Geo-routing and load distribution
-- **CDN**: Global edge caching for static content
-- **Load Balancer**: Distributes traffic across API servers
-
-**API Services**
-- **API Gateway**: Single entry point with rate limiting
-- **Redirect Service**: Optimized for high-throughput GET requests
-- **Shortening Service**: Handles URL validation and code generation
-
-**Data Layer**
-- **Redis Cache**: Hot URL mappings (sub-millisecond)
-- **Database**: Primary storage for URL mappings
-
-**Supporting Services**
-- **Code Generator**: Creates unique short codes (Hash/ID/Random)
-- **Analytics**: Tracks clicks, devices, locations
-- **Security**: Blacklist, rate limiting, authentication
-
-**Monitoring**
-- **Monitoring**: Metrics collection, alerting, logging
 
 ## 6. Storage Layer
 **Requirements** Fast reads/writes.Durability.High availability.Billions of rows.Efficient indexing
