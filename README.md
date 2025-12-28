@@ -2,7 +2,7 @@
 
 A collection of comprehensive system design guides with interactive diagrams and syntax highlighting.
 
-## �️ Setup Instructions
+## ⚙️ Setup Instructions
 
 ### Local Usage
 1. Clone the repository
