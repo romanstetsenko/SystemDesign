@@ -4,7 +4,7 @@ A collection of comprehensive system design guides with interactive diagrams and
 
 ## 📖 Available Documents
 
-### 1. [URL Shortener System Design](URL%20Shortener%20System%20Design.html)
+### 1. [URL Shortener System Design](url-shortener-system-design.html)
 A complete design for a scalable URL shortening service including:
 - Database schema design
 - API endpoint specifications
@@ -12,7 +12,7 @@ A complete design for a scalable URL shortening service including:
 - Caching mechanisms
 - Mermaid architecture diagrams
 
-### 2. [Rate Limiter Implementation](Rate%20Limiter.html)
+### 2. [Rate Limiter Implementation](rate-limiter.html)
 Detailed guide on implementing rate limiting algorithms:
 - Token Bucket algorithm
 - Leaky Bucket algorithm
@@ -20,7 +20,7 @@ Detailed guide on implementing rate limiting algorithms:
 - Sliding Window log
 - Distributed rate limiting
 
-### 3. [System Design Principles](System%20Design%20Principles.html)
+### 3. [System Design Principles](system-design-principles.html)
 Essential principles for designing scalable systems:
 - CAP theorem
 - Consistency patterns
@@ -32,9 +32,9 @@ Essential principles for designing scalable systems:
 
 **Direct Links (once GitHub Pages is enabled):**
 - Main Index: `https://yourusername.github.io/SystemDesign/`
-- URL Shortener: `https://yourusername.github.io/SystemDesign/URL%20Shortener%20System%20Design.html`
-- Rate Limiter: `https://yourusername.github.io/SystemDesign/Rate%20Limiter.html`
-- Principles: `https://yourusername.github.io/SystemDesign/System%20Design%20Principles.html`
+- URL Shortener: `https://yourusername.github.io/SystemDesign/url-shortener-system-design.html`
+- Rate Limiter: `https://yourusername.github.io/SystemDesign/rate-limiter.html`
+- Principles: `https://yourusername.github.io/SystemDesign/system-design-principles.html`
 
 ## ⚡ Features
 
@@ -98,9 +98,9 @@ SystemDesign/
 ├── .github/
 │   └── workflows/
 │       └── deploy-pages.yml    # GitHub Actions for auto-deployment
-├── URL Shortener System Design.html
-├── Rate Limiter.html
-├── System Design Principles.html
+├── url-shortener-system-design.html
+├── rate-limiter.html
+├── system-design-principles.html
 ├── index.html                   # Main landing page
 ├── README.md
 └── .nojekyll                    # Disables Jekyll processing

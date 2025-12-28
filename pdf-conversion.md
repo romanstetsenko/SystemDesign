@@ -17,12 +17,12 @@ This guide explains how to convert the `Rate Limiter.md` file (with Mermaid diag
    ```bash
    E:/repos/SystemDesign/.venv/Scripts/python.exe convert_to_pdf.py
    ```
-2. Open `Rate Limiter.html` in a web browser
+2. Open `rate-limiter.html` in a web browser
 3. Print to PDF using `Ctrl+P`
 
 ## Files Generated
 
-- `Rate Limiter.html` - Printable HTML version with styling
+- `rate-limiter.html` - Printable HTML version with styling
 - `convert_to_pdf.py` - Python conversion script
 - `convert_to_pdf.bat` - Windows batch file for easy conversion
 
