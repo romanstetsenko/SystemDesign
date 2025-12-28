@@ -4,7 +4,15 @@ A collection of comprehensive system design guides with interactive diagrams and
 
 ## 📖 Available Documents
 
-### 1. [URL Shortener System Design](url-shortener-system-design.html)
+### 1. [Notification Service System Design](notification-service-system-design.html)
+Complete guide to building scalable notification systems with multi-channel delivery:
+- Event-driven architecture
+- Multi-channel delivery (push, SMS, email, in-app)
+- Fault tolerance and reliability patterns
+- User preferences and personalization
+- Scalability and performance optimization
+
+### 2. [URL Shortener System Design](url-shortener-system-design.html)
 A complete design for a scalable URL shortening service including:
 - Database schema design
 - API endpoint specifications
@@ -12,7 +20,7 @@ A complete design for a scalable URL shortening service including:
 - Caching mechanisms
 - Mermaid architecture diagrams
 
-### 2. [Rate Limiter Implementation](rate-limiter.html)
+### 3. [Rate Limiter Implementation](rate-limiter.html)
 Detailed guide on implementing rate limiting algorithms:
 - Token Bucket algorithm
 - Leaky Bucket algorithm
@@ -20,7 +28,7 @@ Detailed guide on implementing rate limiting algorithms:
 - Sliding Window log
 - Distributed rate limiting
 
-### 3. [System Design Principles](system-design-principles.html)
+### 4. [System Design Principles](system-design-principles.html)
 Essential principles for designing scalable systems:
 - CAP theorem
 - Consistency patterns
@@ -32,6 +40,7 @@ Essential principles for designing scalable systems:
 
 **Direct Links (once GitHub Pages is enabled):**
 - Main Index: `https://yourusername.github.io/SystemDesign/`
+- Notification Service: `https://yourusername.github.io/SystemDesign/notification-service-system-design.html`
 - URL Shortener: `https://yourusername.github.io/SystemDesign/url-shortener-system-design.html`
 - Rate Limiter: `https://yourusername.github.io/SystemDesign/rate-limiter.html`
 - Principles: `https://yourusername.github.io/SystemDesign/system-design-principles.html`
@@ -98,6 +107,7 @@ SystemDesign/
 ├── .github/
 │   └── workflows/
 │       └── deploy-pages.yml    # GitHub Actions for auto-deployment
+├── notification-service-system-design.html
 ├── url-shortener-system-design.html
 ├── rate-limiter.html
 ├── system-design-principles.html
