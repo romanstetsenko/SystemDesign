@@ -1,6 +1,6 @@
 # System Design Documentation
 
-A collection of comprehensive system design guides with interactive diagrams and syntax highlighting, hosted on GitHub Pages.
+A collection of comprehensive system design guides with interactive diagrams and syntax highlighting.
 
 ## 📖 Available Documents
 
@@ -38,12 +38,12 @@ Essential principles for designing scalable systems:
 
 ## 🚀 Quick Access
 
-**Direct Links (once GitHub Pages is enabled):**
-- Main Index: `https://yourusername.github.io/SystemDesign/`
-- Notification Service: `https://yourusername.github.io/SystemDesign/notification-service-system-design.html`
-- URL Shortener: `https://yourusername.github.io/SystemDesign/url-shortener-system-design.html`
-- Rate Limiter: `https://yourusername.github.io/SystemDesign/rate-limiter.html`
-- Principles: `https://yourusername.github.io/SystemDesign/system-design-principles.html`
+**Direct Links:**
+- Main Index: `index.html`
+- Notification Service: `notification-service-system-design.html`
+- URL Shortener: `url-shortener-system-design.html`
+- Rate Limiter: `rate-limiter.html`
+- Principles: `system-design-principles.html`
 
 ## ⚡ Features
 
@@ -55,65 +55,26 @@ Essential principles for designing scalable systems:
 
 ## 🛠️ Setup Instructions
 
-### Option 1: Enable GitHub Pages (Recommended)
+### Local Usage
+1. Clone the repository
+2. Open `index.html` in your web browser
+3. Click on any document link to view
 
-1. **Go to your repository settings:**
-   - Navigate to `Settings` → `Pages`
-   - Under "Build and deployment", select `Source`: `Deploy from a branch`
-   - Choose `main` or `master` branch
-   - Select `/ (root)` folder
-   - Click `Save`
-
-2. **Wait for deployment:**
-   - GitHub will automatically deploy your site
-   - You'll see a green checkmark when deployment is complete
-   - Your site will be available at: `https://yourusername.github.io/SystemDesign/`
-
-### Option 2: Use GitHub Actions (Automatic Deployment)
-
-The repository includes a GitHub Actions workflow (`.github/workflows/deploy-pages.yml`) that automatically deploys your site on every push.
-
-1. **Enable GitHub Actions:**
-   - Go to `Settings` → `Actions` → `General`
-   - Under "Workflow permissions", ensure "Read and write permissions" is selected
-
-2. **Trigger deployment:**
-   - Push any changes to your repository
-   - Go to `Actions` tab to monitor the deployment
-   - Once complete, your site will be live
-
-### Option 3: Manual Setup
-
-If you prefer manual control:
-
-1. **Create a `gh-pages` branch:**
-   ```bash
-   git checkout --orphan gh-pages
-   git rm -rf .
-   git add .
-   git commit -m "Initial gh-pages commit"
-   git push origin gh-pages
-   ```
-
-2. **Configure GitHub Pages:**
-   - Go to `Settings` → `Pages`
-   - Select `gh-pages` branch
-   - Click `Save`
+### Viewing Diagrams
+- Mermaid diagrams are embedded in HTML files
+- They render automatically when opened in a browser
+- For static viewing, use the HTML files directly
 
 ## 📁 Repository Structure
 
 ```
 SystemDesign/
-├── .github/
-│   └── workflows/
-│       └── deploy-pages.yml    # GitHub Actions for auto-deployment
 ├── notification-service-system-design.html
 ├── url-shortener-system-design.html
 ├── rate-limiter.html
 ├── system-design-principles.html
 ├── index.html                   # Main landing page
 ├── README.md
-└── .nojekyll                    # Disables Jekyll processing
 ```
 
 ## 🔧 Customization
@@ -128,7 +89,7 @@ Replace `yourusername` with your actual GitHub username.
 ### Add New Documents
 1. Add your HTML file to the repository
 2. Update `index.html` with a new card in the `.card-grid` section
-3. Push changes - GitHub Pages will auto-deploy
+3. Open `index.html` in a browser to verify
 
 ## 🐛 Troubleshooting
 
@@ -138,9 +99,8 @@ Replace `yourusername` with your actual GitHub username.
 - Verify the Mermaid script is loading correctly
 
 ### Page Shows Raw HTML?
-- Make sure `.nojekyll` file exists in the root
-- Check that GitHub Pages is configured to deploy from the root directory
-- Wait a few minutes for deployment to complete
+- Open the HTML file directly in a browser (not as raw text)
+- Ensure you're viewing the file locally, not through a text editor
 
 ### Links Not Working?
 - Use URL encoding for spaces: `%20` instead of spaces
@@ -161,4 +121,4 @@ Feel free to:
 
 ---
 
-**Built with ❤️ using GitHub Pages**
+**Built with ❤️ using Mermaid and Highlight.js**
