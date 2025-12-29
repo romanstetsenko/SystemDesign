@@ -7,7 +7,7 @@ A scalable system buys you time and prevents emergency redesigns during traffic 
 ## Reliability (Building for failure)
 Failures are guaranteed, so systems must recover gracefully.  
 Reliability means adding retries, timeouts, monitoring, and isolating components so one failure doesn’t cascade.  
-Graceful degradation ensures that if one feature breaks, others continue working — cached data, defaults, or fallback paths keep the user experience intact.  
+Graceful degradation ensures that if one feature breaks, others continue working - cached data, defaults, or fallback paths keep the user experience intact.  
 A reliable system never fails entirely; it fails partially and predictably.
 
 ## Maintainability (Designing for change)
@@ -20,7 +20,7 @@ Always design with your future self or teammate in mind.
 Performance ensures your system responds quickly and uses resources effectively.  
 You optimize databases, cache expensive operations, move static content to CDNs, and monitor latency.  
 Profiling tools help you identify slow paths so you optimize what matters most.  
-Performance is not about being the fastest — it’s about being fast enough, efficient enough, and stable enough.
+Performance is not about being the fastest - it’s about being fast enough, efficient enough, and stable enough.
 
 ## Security (Protecting what matters)
 Security is a habit, not an advanced topic.  

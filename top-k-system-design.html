@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Top-K System Design</title>
+<script type="module" src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+<style>
+body {font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; line-height: 1.5; color: #333; max-width: 100%; margin: 0; padding: 8px 12px; background: #fff}
+h1 {font-size: 1.6em; border-bottom: 2px solid #2c7be5; padding-bottom: 6px; margin: 10px 0; color: #123;}
+h2 {font-size: 1.05em; margin: 8px 0 4px 0; color: #234; border-bottom: 1px solid #ddd; padding-bottom: 4px}
+pre.mermaid {margin: 8px 0; padding: 8px; background: #f8f9fa; border: 1px solid #ddd; border-radius: 4px}
+@media print { body {font-size: 10pt; margin: 0.2in} h1 {font-size: 16pt} h2 {font-size: 12pt} pre.mermaid {page-break-inside: avoid} }
+</style>
+</head>
+<body>
+<header>
+  <h1>Top-K System Design</h1>
+  <p style="color:#666; font-size:0.9em">Compact, print-optimized summary</p>
+</header>
+<div id="content">
+  <h2>Problem (What we're solving)</h2>
+  <p>Maintain top-K items (by score/count) over a large, high-throughput dataset in near real-time.</p>
+
+  <h2>Goals (Success criteria)</h2>
+  <p>Accuracy vs latency tunable; scalable horizontally; bounded memory; high availability.</p>
+
+  <h2>Non-Functional Requirements (How the system must behave)</h2>
+  <ul>
+    <li>Throughput: support high event ingestion rate.</li>
+    <li>Latency: return top-K within acceptable staleness window.</li>
+    <li>Availability: survive node failures with minimal disruption.</li>
+    <li>Cost: memory/time trade-offs adjustable.</li>
+  </ul>
+
+  <h2>API (Client surface)</h2>
+  <ul>
+    <li>IngestEvent(item_id, delta) - submit updates.</li>
+    <li>GetTopK(K, scope, time_window) - query current top-K.</li>
+    <li>Admin: SetRetention, SetShards, Health/metrics endpoints.</li>
+  </ul>
+
+  <h2>Core Ideas (High-level approach)</h2>
+  <ul>
+    <li>Shard by item_id hash to distribute updates.</li>
+    <li>Each shard maintains an approximate/high-confidence local top-K (sketch + heap).</li>
+    <li>Periodic or on-demand aggregator merges shard results to produce GlobalTopK.</li>
+  </ul>
+
+  <h2>Local Shard Implementation (Memory-sensitive)</h2>
+  <ul>
+    <li>Use Count-Min Sketch (CMS) or Space-Saving algorithm for frequency estimation.</li>
+    <li>Maintain a fixed-size min-heap of candidate top-K to track heavy hitters.</li>
+    <li>Evict low-score entries; keep CMS to estimate unseen items.</li>
+  </ul>
+
+  <h2>Merge Strategy (Correctness & performance)</h2>
+  <p>Pull local top lists and estimated counts → merge by estimated count → re-rank. Optionally re-check top M candidates for exactness.</p>
+
+  <h2>Consistency Model (Behavior guarantees)</h2>
+  <p>Eventual: global top-K converges after aggregation. Configurable staleness via buffering and aggregation interval.</p>
+
+  <h2>Fault Tolerance</h2>
+  <p>Shard state persisted to snapshots or replicated KV. Re-hash keys and rebuild from WAL/snapshots on failure.</p>
+
+  <h2>Optimizations (Performance knobs)</h2>
+  <ul>
+    <li>Sampling; hierarchical aggregation; adaptive K.</li>
+  </ul>
+
+  <h2>Quick merge pseudocode</h2>
+  <pre><code>inputs: per_shard_lists[] (each sorted desc by est_count)
+heap = empty min-heap size K
+for each list in per_shard_lists:
+  for (item, est) in list:
+    if item in heap: update count
+    else if heap.size &lt; K: push(item, est)
+    else if est &gt; heap.min.est: pop min; push(item, est)
+return sorted_desc(heap)</code></pre>
+
+  <h2>Logical Architecture (Components & flow)</h2>
+  <pre class="mermaid">
+flowchart LR
+  C[Clients] -->|IngestEvent| API[API Gateway]
+  API --> Ingest[Ingest Queue / Stream]
+  Ingest --> Shard[Shard Workers]
+  Shard -->|LocalTopK| LocalStore[(Local Snapshot/CMS)]
+  Shard -->|PublishCandidates| Aggregator[Aggregator Service]
+  Aggregator -->|GlobalTopK| Cache[(Read Cache)]
+  Cache --> Clients
+  Aggregator --> Storage[(Persistent Store / WAL)]
+  subgraph Monitoring
+    metrics[Metrics/Tracing]
+  end
+  Shard --> metrics
+  Aggregator --> metrics
+  </pre>
+
+  <h2>Merge Sequence (How aggregator collects & merges)</h2>
+  <pre class="mermaid">
+sequenceDiagram
+  participant A as Aggregator
+  participant S1 as Shard1
+  participant S2 as Shard2
+  A-&gt;&gt;S1: RequestTopCandidates
+  A-&gt;&gt;S2: RequestTopCandidates
+  S1--&gt;&gt;A: TopList1
+  S2--&gt;&gt;A: TopList2
+  A-&gt;&gt;A: Merge(TopList1, TopList2)
+  A--&gt;&gt;Cache: Store(GlobalTopK)
+  Client-&gt;&gt;Cache: GetTopK
+  Cache--&gt;&gt;Client: GlobalTopK
+  </pre>
+
+  <h2>Quick checklist before production</h2>
+  <ul>
+    <li>Define K and acceptable staleness.</li>
+    <li>Choose sketch/algorithm (CMS, Space-Saving, exact counters).</li>
+    <li>Plan shard key and reshard path.</li>
+    <li>Implement WAL + periodic snapshotting.</li>
+    <li>Build monitoring, alerting, and recovery playbooks.</li>
+  </ul>
+</div>
+
+<footer style="margin-top:14px; color:#666; font-size:0.9em">
+  <p>Generated from `top-k-system-design.md` - compact guide for printing.</p>
+</footer>
+
+<script>
+  mermaid.initialize({ startOnLoad: true, theme: "default", securityLevel: "loose" });
+</script>
+</body>
+</html>

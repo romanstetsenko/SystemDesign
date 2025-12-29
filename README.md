@@ -32,6 +32,7 @@ Access all documentation with interactive diagrams and syntax highlighting in a 
 - [2. URL Shortener System Design](#2-url-shortener-system-design)
 - [3. Rate Limiter Implementation](#3-rate-limiter-implementation)
 - [4. System Design Principles](#4-system-design-principles)
+ - [5. Top-K System Design](#5-top-k-system-design)
 
 ---
 
@@ -75,6 +76,11 @@ Essential principles for designing scalable systems:
 - Sharding strategies
 - Replication methods
 
+### 5. Top-K System Design
+**HTML:** [View with diagrams](top-k-system-design.html) | **Markdown:** [View source](top-k-system-design.md)
+
+Compact guide for maintaining top-K items at scale (sharding, sketches, aggregation, merge strategies).
+
 ## 🚀 Quick Access
 
 **HTML Files (with interactive diagrams):**
@@ -83,12 +89,14 @@ Essential principles for designing scalable systems:
 - URL Shortener: `url-shortener-system-design.html`
 - Rate Limiter: `rate-limiter.html`
 - Principles: `system-design-principles.html`
+- Top-K: `top-k-system-design.html`
 
 **Markdown Files (for GitHub viewing):**
 - Notification Service: `notification-service-system-design.md`
 - URL Shortener: `url-shortener-system-design.md`
 - Rate Limiter: `rate-limiter.md`
 - Principles: `system-design-principles.md`
+- Top-K: `top-k-system-design.md`
 
 ## ⚡ Features
 
@@ -110,6 +118,8 @@ SystemDesign/
 ├── rate-limiter.md
 ├── system-design-principles.html
 ├── system-design-principles.md
+├── top-k-system-design.html
+├── top-k-system-design.md
 ├── index.html                   # Main landing page
 ├── README.md
 ├── pdf-conversion.md            # PDF conversion guide
